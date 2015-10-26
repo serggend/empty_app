@@ -53,7 +53,7 @@ namespace :unicorn do
    sh 'unicorn -D -c /home/empty_app/my_app_name/current/config/unicorn.rb'
   end
   task :stop do
-  sh 'kill -9 $(cat /home/empty_app/my_app_name/current/unicorn.pid)'
+  sh 'if [ -f /home/empty_app/my_app_name/current/unicorn.pid ]; then echo kill -9 $(cat /home/empty_app/my_app_name/current/unicorn.pid) ;else echo "pidfile not exist - first run?";fi'
   end
 end
 

@@ -1,4 +1,3 @@
-# config valid only for current version of Capistrano
 lock '3.4.0'
 
 set :application, 'my_app_name'
@@ -8,7 +7,7 @@ set :repo_url, 'https://github.com/serggend/empty_app.git'
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default deploy_to directory is /var/www/my_app_name
-set :deploy_to, "/home/empty_app/#{application}"
+set :deploy_to, "/home/empty_app/my_app_name"
 # Default value for :scm is :git
 # set :scm, :git
 
@@ -33,10 +32,28 @@ set :deploy_to, "/home/empty_app/#{application}"
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 before "deploy:assets:precompile", "config_symlink"
-
+before "deploy", "unicorn:stop"
+after "deploy", "unicorn:start"
 
 namespace :deploy do
+  after :restart, :clear_cache do
+    on roles(:web), in: :groups, limit: 3, wait: 10 do
+      # Here we can do anything such as:
+       #within release_path do
+         #execute :unicorn, '-D -c /home/empty_app/my_app_name/current/config/unicorn.rb'
+       #end
+    end
+  end
+end
+
+
+namespace :unicorn do
+ task :start do
   sh 'unicorn -D -c /home/empty_app/my_app_name/current/config/unicorn.rb'
+ end
+ task :stop do
+  sh 'kill $(cat /home/empty_app/my_app_name/current/unicorn.pid)'
+ end
 end
 
 task :setup do
@@ -49,4 +66,4 @@ end
 
 task :config_symlink do
   sh "ln -nfs #{deploy_to}/shared/database.yml #{release_path}/config/database.yml"
-end
+en

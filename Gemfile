@@ -15,6 +15,7 @@ gem 'capistrano-rvm'
 gem 'capistrano-bundler'
 gem 'capistrano-rails'
 gem 'capistrano'
+gem 'capistrano3-unicorn'
    
 group :development, :test do
   gem 'byebug'

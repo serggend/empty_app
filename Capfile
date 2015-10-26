@@ -20,6 +20,7 @@ require 'capistrano/rvm'
 # require 'capistrano/chruby'
 require 'capistrano/bundler'
 require 'capistrano/rails'
+require 'capistrano3/unicorn'
 # require 'capistrano/rails/migrations'
 # require 'capistrano/passenger'
 

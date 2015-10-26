@@ -8,7 +8,7 @@ set :repo_url, 'https://github.com/serggend/empty_app.git'
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default deploy_to directory is /var/www/my_app_name
-set :deploy_to, "/home/#{user}/#{application}"
+set :deploy_to, "/home/empty_app/#{application}"
 # Default value for :scm is :git
 # set :scm, :git
 

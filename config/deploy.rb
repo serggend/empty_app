@@ -1,13 +1,14 @@
 lock '3.4.0'
 
-set :application, 'my_app_name'
+application = "my_app_name"
+set :application, application
 set :repo_url, 'https://github.com/serggend/empty_app.git'
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default deploy_to directory is /var/www/my_app_name
-set :deploy_to, "/home/empty_app/my_app_name"
+set :deploy_to, "/home/empty_app/#{application}"
 # Default value for :scm is :git
 # set :scm, :git
 
@@ -32,38 +33,38 @@ set :deploy_to, "/home/empty_app/my_app_name"
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 before "deploy:assets:precompile", "config_symlink"
-before "deploy", "unicorn:stop"
-after "deploy", "unicorn:start"
+before 'deploy', 'unicorn:stop'
+after 'deploy:publishing', 'unicorn:start'
 
 namespace :deploy do
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
       # Here we can do anything such as:
-       #within release_path do
-         #execute :unicorn, '-D -c /home/empty_app/my_app_name/current/config/unicorn.rb'
-       #end
+       within release_path do
+         execute :unicorn, '-D -c /home/empty_app/my_app_name/current/config/unicorn.rb'
+       end
     end
   end
+#sh 'unicorn -D -c /home/empty_app/my_app_name/current/config/unicorn.rb'
 end
 
-
 namespace :unicorn do
- task :start do
-  sh 'unicorn -D -c /home/empty_app/my_app_name/current/config/unicorn.rb'
- end
- task :stop do
-  sh 'kill $(cat /home/empty_app/my_app_name/current/unicorn.pid)'
- end
+  task :start do
+   sh 'unicorn -D -c /home/empty_app/my_app_name/current/config/unicorn.rb'
+  end
+  task :stop do
+  sh 'kill -9 $(cat /home/empty_app/my_app_name/current/unicorn.pid)'
+  end
 end
 
 task :setup do
   sh "mkdir -p /home/empty_app/my_app_name/tmp"
   sh "mkdir -p /home/empty_app/my_app_name/shared"
-  sh "chown -R empty_app:empty_app /home/empty_app/my_app_name/"
+  sh "chown -R empty_app:adm /home/empty_app/my_app_name/"
   sh "chmod -R 755 /home/empty_app/my_app_name/"
   sh "cp /home/empty_app/empty/config/database.yml #{deploy_to}/shared/database.yml"
 end
 
 task :config_symlink do
   sh "ln -nfs #{deploy_to}/shared/database.yml #{release_path}/config/database.yml"
-en
+end
